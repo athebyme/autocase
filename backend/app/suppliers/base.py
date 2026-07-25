@@ -57,6 +57,17 @@ class SupplierConfig(BaseModel):
     def _strip(cls, value: str) -> str:
         return value.rstrip("/")
 
+    @field_validator("login", "password")
+    @classmethod
+    def _trim_secret(cls, value: str) -> str:
+        """Убрать пробелы и переносы вокруг кредов.
+
+        Секреты почти всегда попадают в окружение копипастом, и невидимый
+        хвостовой перенос строки превращается в «неверный пароль» — ошибку,
+        которую потом ищут часами.
+        """
+        return value.strip()
+
     def model_post_init(self, _: object) -> None:
         if not self.name:
             object.__setattr__(self, "name", self.code.upper())

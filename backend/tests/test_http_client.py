@@ -197,3 +197,20 @@ async def test_post_sends_form_encoded_body() -> None:
     request = route.calls.last.request
     assert request.headers["content-type"].startswith("application/x-www-form-urlencoded")
     assert "comment=" in request.content.decode()
+
+
+@respx.mock
+async def test_redirect_is_not_followed_with_credentials() -> None:
+    """https-хост поставщика уводит на другой домен — туда basic-auth уезжать не должен."""
+    route = respx.get(f"{BASE}/search/part.json").mock(
+        return_value=httpx.Response(301, headers={"location": "https://elsewhere.test/v1"})
+    )
+    client = make_client(retries=0)
+    try:
+        with pytest.raises(GatewayError) as caught:
+            await client.get("search/part", {"part_code": "x"})
+    finally:
+        await client.aclose()
+
+    assert route.call_count == 1, "переход по редиректу выполняться не должен"
+    assert "перенаправляет" in caught.value.message

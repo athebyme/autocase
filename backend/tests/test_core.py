@@ -153,3 +153,16 @@ def test_supporting_filters_by_capability() -> None:
     registry = SupplierRegistry([FakeAdapter(make_config("aa"))])
     assert [a.code for a in registry.supporting("remote_basket")] == ["aa"]
     assert registry.supporting("несуществующая_фича") == []
+
+
+def test_credentials_are_trimmed() -> None:
+    """Хвостовой перенос из скопированного секрета не должен ломать авторизацию."""
+    config = SupplierConfig(
+        code="ak",
+        type="autokontinent",
+        login="  user\n",
+        password="\tsecret ",
+    )
+
+    assert config.login == "user"
+    assert config.password == "secret"
