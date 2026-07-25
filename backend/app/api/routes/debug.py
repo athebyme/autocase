@@ -75,3 +75,36 @@ async def raw(
         # Больше пары записей для диагностики не нужно, а ответ бывает большим.
         "sample": payload[:2] if isinstance(payload, list) else payload,
     }
+
+
+@router.get("/supplier", summary="Как шлюз видит креды (только при DEBUG_RAW=1)")
+async def supplier_config(
+    request: Request,
+    registry: Registry,
+    supplier: str = Query("ak"),
+) -> dict[str, Any]:
+    """Безопасная сводка по конфигурации: длины и превью, но не значения.
+
+    Отвечает на вопрос «а те ли креды вообще доехали до контейнера» — самый
+    частый источник ошибки авторизации после опечатки в самом секрете.
+    """
+    if not getattr(request.app.state.settings, "debug_raw", False):
+        raise SupplierNotFound("Диагностика выключена", detail="Задайте DEBUG_RAW=1")
+
+    adapter = registry.get(supplier)
+    config = adapter.config
+    login, password = config.login, config.password
+
+    return {
+        "supplier": supplier,
+        "base_url": config.base_url,
+        "live": adapter.live,
+        "login_length": len(login),
+        "login_preview": f"{login[:2]}…{login[-1:]}" if len(login) > 3 else "—",
+        "password_length": len(password),
+        # Невидимые символы внутри секрета переживают strip и ломают вход.
+        "login_has_hidden_chars": any(ch.isspace() or not ch.isprintable() for ch in login),
+        "password_has_hidden_chars": any(ch.isspace() or not ch.isprintable() for ch in password),
+        "login_non_ascii": not login.isascii(),
+        "password_non_ascii": not password.isascii(),
+    }
