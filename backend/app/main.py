@@ -17,7 +17,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from app.api.routes import basket, catalog, orders, system
+from app.api.routes import basket, catalog, debug, orders, system
 from app.config import get_settings
 from app.core.cache import TTLCache
 from app.core.errors import GatewayError
@@ -118,7 +118,7 @@ def create_app() -> FastAPI:
             },
         )
 
-    for router in (system.router, catalog.router, basket.router, orders.router):
+    for router in (system.router, catalog.router, basket.router, orders.router, debug.router):
         app.include_router(router, prefix="/api")
 
     return app
