@@ -1,0 +1,23 @@
+[
+  {
+    "code": "ak",
+    "type": "autokontinent",
+    "name": "Автоконтинент",
+    "enabled": true,
+    "base_url": "http://api.autokontinent.ru/v1",
+    "login": "${AK_LOGIN}",
+    "password": "${AK_PASSWORD}",
+    "timeout": 15,
+    "priority": 10
+  },
+  {
+    "code": "ak-spb",
+    "type": "autokontinent",
+    "name": "Автоконтинент · СПб",
+    "enabled": false,
+    "base_url": "http://api.autokontinent.ru/v1",
+    "login": "${AK_SPB_LOGIN}",
+    "password": "${AK_SPB_PASSWORD}",
+    "priority": 20
+  }
+]

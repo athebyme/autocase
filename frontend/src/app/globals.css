@@ -1,0 +1,182 @@
+@import "tailwindcss";
+
+/* Тему переключаем атрибутом на <html>, а не системной настройкой:
+   переключатель в шапке должен побеждать. */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+@theme {
+  /* Бумага, а не белый: тёплый фон технической документации. */
+  --color-paper: #f2efe9;
+  --color-surface: #fbf9f5;
+  --color-sunken: #e8e4da;
+  --color-ink: #17150f;
+  --color-muted: #6b6555;
+  --color-faint: #9a9384;
+  --color-rule: #dbd5c7;
+  --color-rule-strong: #bfb8a5;
+
+  /* Один сигнальный цвет на весь интерфейс — только для действия. */
+  --color-accent: #ff4a00;
+  --color-accent-ink: #ffffff;
+  --color-accent-soft: #ffe7db;
+
+  --color-positive: #1e6f4c;
+  --color-positive-soft: #dff0e5;
+  --color-warning: #a65a00;
+  --color-warning-soft: #fdeccd;
+  --color-critical: #c02617;
+  --color-critical-soft: #fbe0dc;
+
+  --font-sans: var(--font-golos), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, "SF Mono", monospace;
+
+  /* Прямые углы — принципиальное решение, а не недосмотр. */
+  --radius-none: 0px;
+
+  --text-display: 4.5rem;
+  --text-display--line-height: 0.92;
+  --text-display--letter-spacing: -0.035em;
+  --text-mega: 8.5rem;
+  --text-mega--line-height: 0.82;
+  --text-mega--letter-spacing: -0.045em;
+
+  --animate-rise: rise 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-slide: slide 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+[data-theme="dark"] {
+  --color-paper: #121110;
+  --color-surface: #1a1916;
+  --color-sunken: #0c0b0a;
+  --color-ink: #f2eee4;
+  --color-muted: #948e7f;
+  --color-faint: #6a6558;
+  --color-rule: #2c2a25;
+  --color-rule-strong: #423f37;
+
+  --color-accent: #ff5f21;
+  --color-accent-ink: #140b06;
+  --color-accent-soft: #33190d;
+
+  --color-positive: #4fbe89;
+  --color-positive-soft: #12281d;
+  --color-warning: #e0a047;
+  --color-warning-soft: #2e2210;
+  --color-critical: #ff6d5c;
+  --color-critical-soft: #2f1410;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes slide {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: none;
+  }
+}
+
+@layer base {
+  * {
+    border-radius: 0;
+  }
+
+  html {
+    color-scheme: light;
+    scrollbar-gutter: stable;
+  }
+
+  [data-theme="dark"] html,
+  html[data-theme="dark"] {
+    color-scheme: dark;
+  }
+
+  body {
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    font-feature-settings: "ss01";
+  }
+
+  /* Все числовые данные — моноширинные и с табличными цифрами, чтобы
+     столбцы цен и остатков выстраивались по разрядам. */
+  code,
+  kbd,
+  samp,
+  .num {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+  }
+
+  ::selection {
+    background-color: var(--color-accent);
+    color: var(--color-accent-ink);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  input[type="search"]::-webkit-search-cancel-button {
+    appearance: none;
+  }
+
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    appearance: none;
+    margin: 0;
+  }
+}
+
+@layer components {
+  /* Миллиметровка под всем макетом: едва читаемая сетка чертежа. */
+  .grid-paper {
+    background-image:
+      linear-gradient(to right, color-mix(in srgb, var(--color-rule) 55%, transparent) 1px, transparent 1px),
+      linear-gradient(to bottom, color-mix(in srgb, var(--color-rule) 55%, transparent) 1px, transparent 1px);
+    background-size: 96px 96px;
+  }
+
+  /* Диагональная штриховка: «этого нет на складе» / «поедет транзитом». */
+  .hatch {
+    background-image: repeating-linear-gradient(
+      -45deg,
+      color-mix(in srgb, var(--color-rule-strong) 60%, transparent) 0 1px,
+      transparent 1px 7px
+    );
+  }
+
+  /* Приводная лента по краю блока — заимствовано у печатных макетов. */
+  .sprocket {
+    background-image: repeating-linear-gradient(
+      to right,
+      var(--color-rule) 0 6px,
+      transparent 6px 14px
+    );
+    background-size: 100% 1px;
+    background-repeat: no-repeat;
+  }
+
+  .u-underline-marker {
+    background-image: linear-gradient(var(--color-accent), var(--color-accent));
+    background-size: 100% 3px;
+    background-position: 0 100%;
+    background-repeat: no-repeat;
+  }
+}
+
+@utility text-balance-tight {
+  text-wrap: balance;
+}

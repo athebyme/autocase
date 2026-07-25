@@ -1,0 +1,23 @@
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+
+# Node
+node_modules/
+.next/
+next-env.d.ts
+*.tsbuildinfo
+
+# Секреты и локальные конфиги
+.env
+.env.local
+.env.*.local
+suppliers.json
+
+# Прочее
+.DS_Store
+*.log
