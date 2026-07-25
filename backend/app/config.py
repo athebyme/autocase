@@ -8,9 +8,10 @@ import os
 import re
 from functools import lru_cache
 from pathlib import Path
+from typing import Annotated
 
 from pydantic import Field, field_validator
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic_settings import BaseSettings, NoDecode, SettingsConfigDict
 
 from app.suppliers.base import SupplierConfig
 
@@ -55,7 +56,11 @@ class Settings(BaseSettings):
     search_cache_size: int = 512
 
     # --- HTTP ---------------------------------------------------------------
-    cors_origins: list[str] = Field(default_factory=lambda: ["http://localhost:3000"])
+    # NoDecode обязателен: без него pydantic-settings пытается разобрать
+    # переменную окружения как JSON и падает на обычном «https://site».
+    cors_origins: Annotated[list[str], NoDecode] = Field(
+        default_factory=lambda: ["http://localhost:3000"]
+    )
     log_level: str = "INFO"
     supplier_fanout_timeout: float = 20.0
     """Сколько ждём медленного поставщика, прежде чем отдать выдачу без него."""

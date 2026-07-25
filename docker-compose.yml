@@ -1,0 +1,45 @@
+services:
+  gateway:
+    build:
+      context: ./backend
+    container_name: autocase-gateway
+    restart: unless-stopped
+    environment:
+      # Пусто → демо-данные. Заполните в .env, чтобы пойти в живой API.
+      - AK_LOGIN=${AK_LOGIN:-}
+      - AK_PASSWORD=${AK_PASSWORD:-}
+      - AK_BASE_URL=${AK_BASE_URL:-http://api.autokontinent.ru/v1}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - SEARCH_CACHE_TTL=${SEARCH_CACHE_TTL:-60}
+      - SUPPLIER_FANOUT_TIMEOUT=${SUPPLIER_FANOUT_TIMEOUT:-20}
+      # Браузер ходит только на витрину, поэтому CORS шлюзу не нужен.
+      - CORS_ORIGINS=${PUBLIC_ORIGIN:-https://seller-platform.tech}
+    expose:
+      - "8000"
+    networks:
+      - edge
+
+  web:
+    build:
+      context: ./frontend
+      args:
+        # Подпуть вшивается в сборку. Пусто — витрина в корне домена.
+        BASE_PATH: ${BASE_PATH:-}
+    container_name: autocase-web
+    restart: unless-stopped
+    environment:
+      - BACKEND_URL=http://autocase-gateway:8000
+    expose:
+      - "3000"
+    depends_on:
+      gateway:
+        condition: service_healthy
+    networks:
+      - edge
+
+networks:
+  # Общая сеть с уже работающим Caddy: он ходит в контейнеры по именам,
+  # наружу мы не публикуем ни одного порта.
+  edge:
+    external: true
+    name: super-octo-broccoli_default
