@@ -1,48 +1,43 @@
 "use client";
 
+import Link from "next/link";
+
 import { useSuppliers } from "@/lib/hooks";
 
 export function SiteFooter() {
   const { data } = useSuppliers();
   const suppliers = data?.suppliers ?? [];
-  const demo = suppliers.filter((supplier) => !supplier.live);
+  // Пока данные демонстрационные, об этом нужно сказать прямо — но один раз
+  // и мелким шрифтом, а не техническими сводками на каждом экране.
+  const demo = suppliers.length > 0 && suppliers.every((supplier) => !supplier.live);
 
   return (
-    <footer className="mt-24 border-t border-rule">
-      <div className="mx-auto grid max-w-[104rem] gap-8 px-4 py-10 sm:px-6 md:grid-cols-[1fr_auto]">
-        <div>
-          <p className="text-[0.6875rem] leading-[1.05] font-black tracking-[0.02em] uppercase">
-            Авто
-            <br />
-            Континент
+    <footer className="mt-20 border-t border-rule">
+      <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-8 gap-y-4 px-4 py-8 sm:px-6">
+        <p className="text-[0.6875rem] leading-[1.05] font-black tracking-[0.02em] uppercase">
+          Авто
+          <br />
+          Континент
+        </p>
+
+        <nav className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted">
+          <Link href="/" className="transition-colors hover:text-ink">
+            Поиск
+          </Link>
+          <Link href="/basket" className="transition-colors hover:text-ink">
+            Корзина
+          </Link>
+          <Link href="/orders" className="transition-colors hover:text-ink">
+            Заказы
+          </Link>
+        </nav>
+
+        {demo ? (
+          <p className="ml-auto text-xs text-faint">
+            Демонстрационный режим: цены и наличие показаны для примера
           </p>
-          <p className="mt-4 max-w-md text-sm leading-relaxed text-muted">
-            Подбор запчастей по артикулу и OEM-номеру. Наличие на складах, сроки поставки и
-            оформление заказа в один экран.
-          </p>
-        </div>
-
-        <dl className="grid gap-x-8 gap-y-2 self-start text-xs sm:grid-cols-2">
-          <dt className="text-faint">Поставщиков подключено</dt>
-          <dd className="num text-ink">{suppliers.length || "—"}</dd>
-
-          <dt className="text-faint">Источник данных</dt>
-          <dd className="num text-ink">
-            {suppliers.length === 0
-              ? "—"
-              : demo.length === suppliers.length
-                ? "демо-режим"
-                : demo.length
-                  ? `частично демо (${demo.length})`
-                  : "живой API"}
-          </dd>
-
-          <dt className="text-faint">Часовой пояс сроков</dt>
-          <dd className="num text-ink">Europe/Moscow</dd>
-        </dl>
+        ) : null}
       </div>
-
-      <div className="sprocket h-px w-full" aria-hidden />
     </footer>
   );
 }

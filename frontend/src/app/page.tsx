@@ -1,145 +1,64 @@
 import Link from "next/link";
 
+import { PartArt } from "@/components/part-art";
 import { SearchField } from "@/components/search-field";
-import { SupplierStatus } from "@/components/supplier-status";
-import { CornerFrame, SectionLabel } from "@/components/ui";
 
-/** Примеры из демо-каталога: дают попробовать поиск, не выдумывая артикул. */
-const SAMPLES = [
-  { code: "PH5883", brand: "Fram", name: "Фильтр масляный" },
-  { code: "GDB1330", brand: "TRW", name: "Колодки тормозные, передние" },
-  { code: "BKR6E-11", brand: "NGK", name: "Свеча зажигания" },
-  { code: "6PK1053", brand: "Gates", name: "Ремень поликлиновой" },
-  { code: "341255", brand: "KYB", name: "Амортизатор передний" },
-  { code: "DF4050", brand: "TRW", name: "Диск тормозной" },
-];
-
-const STEPS = [
-  {
-    index: "01",
-    title: "Артикул",
-    body: "Вводите как есть — с дефисами, пробелами или без. Мы сами приведём к нужному виду и повторим поиск, если поставщик не понял написание.",
-  },
-  {
-    index: "02",
-    title: "Проценка",
-    body: "Спрашиваем всех подключённых поставщиков одновременно и показываем склады, цены, остатки и сроки в одной таблице. Аналоги — отдельным блоком.",
-  },
-  {
-    index: "03",
-    title: "Заказ",
-    body: "Собираете корзину из предложений разных складов, а мы разносим её по поставщикам и отправляем каждому свою часть.",
-  },
+/** Живые примеры из каталога: дают попробовать поиск, не выдумывая номер. */
+const POPULAR = [
+  { code: "PH5883", name: "Фильтр масляный", brand: "Fram" },
+  { code: "GDB1330", name: "Колодки тормозные", brand: "TRW" },
+  { code: "BKR6E-11", name: "Свеча зажигания", brand: "NGK" },
+  { code: "6PK1053", name: "Ремень поликлиновой", brand: "Gates" },
+  { code: "341255", name: "Амортизатор передний", brand: "KYB" },
+  { code: "DF4050", name: "Диск тормозной", brand: "TRW" },
 ];
 
 export default function HomePage() {
   return (
     <div>
-      {/* --- Экран поиска ---------------------------------------------- */}
       <section className="relative overflow-hidden border-b border-rule">
-        <div className="grid-paper pointer-events-none absolute inset-0 opacity-45" aria-hidden />
-        <div
-          className="pointer-events-none absolute inset-x-0 top-0 h-px bg-accent"
-          aria-hidden
-        />
+        <div className="grid-paper pointer-events-none absolute inset-0 opacity-40" aria-hidden />
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-accent" aria-hidden />
 
-        <div className="relative mx-auto max-w-[104rem] px-4 pt-14 pb-14 sm:px-6 sm:pt-20 sm:pb-16">
-          <SectionLabel index="01" aside={<SupplierStatus />}>
-            Подбор по артикулу
-          </SectionLabel>
+        <div className="relative mx-auto max-w-4xl px-4 pt-16 pb-16 text-center sm:px-6 sm:pt-24 sm:pb-20">
+          <h1 className="text-[clamp(2.5rem,8vw,5.5rem)] leading-[0.9] font-black tracking-[-0.04em] uppercase">
+            Запчасти
+            <br />
+            <span className="text-accent">по номеру детали</span>
+          </h1>
 
-          <div className="mt-10 grid items-start gap-10 lg:grid-cols-[minmax(0,1fr)_20rem] lg:gap-16">
-            <div className="min-w-0">
-              <h1 className="text-[clamp(2.75rem,9vw,8.5rem)] leading-[0.86] font-black tracking-[-0.045em] uppercase">
-                Запчасти
-                <br />
-                <span className="text-accent">по номеру</span>
-                <br />
-                детали
-              </h1>
+          <p className="mx-auto mt-5 max-w-xl text-base text-muted sm:text-lg">
+            Введите номер с упаковки или из документов — покажем, где деталь есть, сколько стоит и
+            когда приедет.
+          </p>
 
-              <p className="mt-6 max-w-xl text-base leading-relaxed text-muted sm:text-lg">
-                Один ввод — и вы видите, у кого из поставщиков деталь есть, почём и когда приедет.
-                Вместе с аналогами, кратностью отгрузки и транзитом.
-              </p>
-            </div>
-
-            {/* Табличка-спецификация вместо декоративной картинки. */}
-            <CornerFrame className="h-fit bg-surface/70 lg:mt-2">
-              <dl className="divide-y divide-rule text-sm">
-                <Spec term="Источник" value="API поставщиков" />
-                <Spec term="Поиск" value="артикул / OEM" />
-                <Spec term="Проценка" value="все склады сразу" />
-                <Spec term="Аналоги" value="кросс-номера" />
-                <Spec term="Сроки" value="в сутках МСК" />
-                <Spec term="Быстрый вызов" value="⌘K или /" />
-              </dl>
-            </CornerFrame>
-          </div>
-
-          {/* Поле поиска — во всю ширину: это главный элемент страницы. */}
-          <div className="mt-12">
+          <div className="mx-auto mt-9 max-w-2xl text-left">
             <SearchField />
           </div>
         </div>
       </section>
 
-      {/* --- Как это работает ------------------------------------------ */}
-      <section className="mx-auto max-w-[104rem] px-4 py-16 sm:px-6 sm:py-20">
-        <SectionLabel index="02">Как это работает</SectionLabel>
+      <section className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-16">
+        <h2 className="text-xl font-bold tracking-tight sm:text-2xl">Часто ищут</h2>
 
-        <div className="mt-8 grid gap-px bg-rule sm:grid-cols-3">
-          {STEPS.map((step) => (
-            <div key={step.index} className="bg-paper p-6 sm:p-7">
-              <span className="num text-[0.6875rem] tracking-[0.2em] text-accent">
-                {step.index}
-              </span>
-              <h3 className="mt-3 text-xl font-bold tracking-tight">{step.title}</h3>
-              <p className="mt-3 text-sm leading-relaxed text-muted">{step.body}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* --- Примеры ---------------------------------------------------- */}
-      <section className="mx-auto max-w-[104rem] px-4 pb-8 sm:px-6">
-        <SectionLabel index="03" aside="кликните, чтобы открыть проценку">
-          Попробовать на примере
-        </SectionLabel>
-
-        <ul className="mt-8 grid gap-px bg-rule sm:grid-cols-2 lg:grid-cols-3">
-          {SAMPLES.map((sample) => (
-            <li key={sample.code}>
+        <ul className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+          {POPULAR.map((item) => (
+            <li key={item.code}>
               <Link
-                href={`/search?q=${encodeURIComponent(sample.code)}`}
-                className="group flex items-baseline gap-4 bg-paper px-5 py-4 transition-colors hover:bg-surface"
+                href={`/search?q=${encodeURIComponent(item.code)}`}
+                className="group flex h-full flex-col items-center gap-3 border border-rule bg-surface/40 p-4 text-center transition-all hover:-translate-y-0.5 hover:border-accent hover:bg-surface"
               >
-                <span className="num w-28 shrink-0 text-sm font-medium tracking-[0.04em] group-hover:text-accent">
-                  {sample.code}
-                </span>
-                <span className="min-w-0 flex-1">
-                  <span className="block truncate text-sm">{sample.name}</span>
-                  <span className="num mt-0.5 block text-[0.625rem] tracking-[0.12em] text-faint uppercase">
-                    {sample.brand}
-                  </span>
-                </span>
-                <span aria-hidden className="text-faint transition-transform group-hover:translate-x-1 group-hover:text-accent">
-                  →
-                </span>
+                <PartArt
+                  name={item.name}
+                  className="h-14 w-14 transition-transform group-hover:scale-105"
+                />
+                <span className="text-sm leading-tight font-medium">{item.name}</span>
+                <span className="num mt-auto text-[0.6875rem] text-faint">{item.code}</span>
               </Link>
             </li>
           ))}
         </ul>
       </section>
-    </div>
-  );
-}
-
-function Spec({ term, value }: { term: string; value: string }) {
-  return (
-    <div className="flex items-baseline justify-between gap-4 px-4 py-2.5">
-      <dt className="text-[0.6875rem] tracking-[0.1em] text-faint uppercase">{term}</dt>
-      <dd className="num text-xs text-ink">{value}</dd>
     </div>
   );
 }
