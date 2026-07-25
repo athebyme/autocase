@@ -92,7 +92,9 @@ class AkHttpClient:
             ),
             headers={"Accept": "application/json"},
             transport=transport,
-            follow_redirects=True,
+            # Редиректы выключены намеренно: у поставщика https-хост уводит на
+            # другой домен, и переход по нему потащил бы туда basic-auth.
+            follow_redirects=False,
         )
 
     async def aclose(self) -> None:
@@ -166,7 +168,9 @@ class AkHttpClient:
         raise last_error or SupplierUnavailable(supplier=self._supplier)
 
     def _parse(self, response: httpx.Response) -> Any:
-        if response.status_code >= 400:
+        # 3xx тоже ошибка: редиректы мы не выполняем, чтобы не унести креды
+        # на чужой хост, — значит и тела для разбора здесь не будет.
+        if response.status_code >= 300:
             raise self._error_from(response)
         try:
             return response.json()
@@ -178,6 +182,13 @@ class AkHttpClient:
             ) from exc
 
     def _error_from(self, response: httpx.Response) -> GatewayError:
+        if 300 <= response.status_code < 400:
+            return GatewayError(
+                "Поставщик перенаправляет запрос — проверьте адрес API",
+                supplier=self._supplier,
+                detail=f"{response.status_code} → {response.headers.get('location', '?')}",
+            )
+
         try:
             body = response.json()
         except ValueError:
