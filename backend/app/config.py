@@ -62,6 +62,9 @@ class Settings(BaseSettings):
         default_factory=lambda: ["http://localhost:3000"]
     )
     log_level: str = "INFO"
+    debug_raw: bool = False
+    """Включает /api/debug/raw — сырой ответ поставщика для диагностики."""
+
     supplier_fanout_timeout: float = 20.0
     """Сколько ждём медленного поставщика, прежде чем отдать выдачу без него."""
 
