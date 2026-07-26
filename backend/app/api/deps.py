@@ -10,6 +10,7 @@ from app.core.cache import TTLCache
 from app.services.basket import BasketService
 from app.services.catalog import CatalogService
 from app.services.orders import OrdersService
+from app.services.vehicles import VehicleLookupService
 from app.suppliers.registry import SupplierRegistry
 
 
@@ -33,8 +34,13 @@ def get_orders(request: Request) -> OrdersService:
     return request.app.state.orders
 
 
+def get_vehicle_lookup(request: Request) -> VehicleLookupService:
+    return request.app.state.vehicle_lookup
+
+
 Registry = Annotated[SupplierRegistry, Depends(get_registry)]
 Cache = Annotated[TTLCache, Depends(get_cache)]
 Catalog = Annotated[CatalogService, Depends(get_catalog)]
 Basket = Annotated[BasketService, Depends(get_basket)]
 Orders = Annotated[OrdersService, Depends(get_orders)]
+VehicleLookup = Annotated[VehicleLookupService, Depends(get_vehicle_lookup)]

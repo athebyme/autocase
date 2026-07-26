@@ -22,12 +22,16 @@ export default async function SearchPage({ searchParams }: PageProps) {
   const query = (params.q ?? "").trim();
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-12">
-      <div className="mx-auto max-w-2xl">
+    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12">
+      <div className="grid gap-6 border-b-2 border-ink pb-8 md:grid-cols-[minmax(0,0.7fr)_minmax(26rem,1.3fr)] md:items-end">
+        <div>
+          <p className="text-xs font-bold tracking-[0.14em] text-muted uppercase">Каталог</p>
+          <h1 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">Поиск запчастей</h1>
+        </div>
         <SearchField key={query} initial={query} size="inline" />
       </div>
 
-      <div className="mt-10">
+      <div className="mt-8">
         {query ? (
           <Suspense key={query} fallback={<Loading />}>
             <Results query={query} />
@@ -58,15 +62,22 @@ async function Results({ query }: { query: string }) {
 
   if (!exact.length && !similar.length) {
     return (
-      <Empty
-        title="Ничего не нашли"
-        hint={
-          <>
-            По номеру <span className="num text-ink">{query}</span> предложений нет. Проверьте
-            написание — лишние пробелы и дефисы мы убираем сами.
-          </>
-        }
-      />
+      <div className="space-y-5">
+        {result.issues.length ? <IssuesBanner issues={result.issues} /> : null}
+        <Empty
+          title={result.issues.length ? "Не удалось получить предложения" : "Ничего не нашли"}
+          hint={
+            result.issues.length ? (
+              "Поставщик не ответил на запрос. Проверьте сообщение выше или повторите поиск позже."
+            ) : (
+              <>
+                По номеру <span className="num text-ink">{query}</span> предложений нет. Проверьте
+                написание — лишние пробелы и дефисы мы убираем сами.
+              </>
+            )
+          }
+        />
+      </div>
     );
   }
 
@@ -77,14 +88,19 @@ async function Results({ query }: { query: string }) {
       {result.issues.length ? <IssuesBanner issues={result.issues} /> : null}
 
       <section>
-        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
-          {exact.length ? "Нашли по вашему номеру" : "Точных совпадений нет"}
-        </h1>
-        <p className="mt-1.5 text-sm text-muted">
-          {exact.length
-            ? `${found} ${plural(found, "товар", "товара", "товаров")} · цены и сроки уже с учётом наличия`
-            : "Показываем детали, которые подходят вместо неё"}
-        </p>
+        <div className="flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <p className="num text-xs text-accent">{query.toUpperCase()}</p>
+            <h2 className="mt-1 text-2xl font-bold tracking-tight sm:text-3xl">
+              {exact.length ? "Точные совпадения" : "Точных совпадений нет"}
+            </h2>
+          </div>
+          <p className="text-sm text-muted">
+            {exact.length
+              ? `${found} ${plural(found, "товар", "товара", "товаров")} · цены и наличие обновлены`
+              : "Показываем совместимые замены"}
+          </p>
+        </div>
 
         <div className="mt-6 space-y-4">
           {exact.map((group) => (
@@ -94,7 +110,7 @@ async function Results({ query }: { query: string }) {
       </section>
 
       {similar.length ? (
-        <section>
+        <section className="border-t-2 border-ink pt-8">
           <h2 className="text-xl font-bold tracking-tight sm:text-2xl">Подходящие замены</h2>
           <p className="mt-1.5 max-w-2xl text-sm text-muted">
             Те же характеристики, другие производители. Часто дешевле — но перед заказом сверьте

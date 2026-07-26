@@ -7,6 +7,7 @@ import type {
   SearchResult,
   SubmitResult,
   SuppliersResponse,
+  VinDecodeResult,
 } from "@/lib/types";
 
 /* В браузере ходим на собственный /api — его проксирует Next (см. next.config.ts).
@@ -87,6 +88,12 @@ function offerQuery({ analogs = true, transit = true }: OfferFilters) {
 
 export const api = {
   suppliers: () => request<SuppliersResponse>("/api/suppliers", { revalidate: 60 }),
+
+  decodeVin: (vin: string) =>
+    request<VinDecodeResult>("/api/vin/decode", {
+      method: "POST",
+      body: JSON.stringify({ vin }),
+    }),
 
   search: (query: string) =>
     request<SearchResult>(`/api/search?q=${encodeURIComponent(query)}`, { revalidate: 30 }),

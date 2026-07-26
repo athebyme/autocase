@@ -53,6 +53,68 @@ class SupplierInfo(BaseModel):
     capabilities: SupplierCapabilities = Field(default_factory=SupplierCapabilities)
 
 
+class VinConfidence(StrEnum):
+    """Насколько точно источник связал VIN с конкретной комплектацией."""
+
+    EXACT = "exact"
+    LIKELY = "likely"
+    PARTIAL = "partial"
+
+
+class VehicleAttribute(BaseModel):
+    """Дополнительный параметр OEM-каталога, не потерянный при нормализации."""
+
+    key: str
+    label: str
+    value: str
+
+
+class Vehicle(BaseModel):
+    """Автомобиль, распознанный по VIN независимым декодером."""
+
+    vin: str
+    make: str
+    model: str | None = None
+    model_year: int | None = None
+    manufacturer: str | None = None
+    series: str | None = None
+    trim: str | None = None
+    body_class: str | None = None
+    vehicle_type: str | None = None
+    doors: int | None = None
+    drive_type: str | None = None
+    transmission: str | None = None
+    transmission_speeds: int | None = None
+    engine_code: str | None = None
+    engine_model: str | None = None
+    engine_manufacturer: str | None = None
+    engine_liters: float | None = None
+    engine_cylinders: int | None = None
+    engine_power_hp: int | None = None
+    fuel_type: str | None = None
+    electrification_level: str | None = None
+    production_date: str | None = None
+    market: str | None = None
+    plant_city: str | None = None
+    plant_country: str | None = None
+    catalog_code: str | None = None
+    vehicle_id: str | None = None
+    attributes: list[VehicleAttribute] = Field(default_factory=list)
+
+
+class VinDecodeResult(BaseModel):
+    vehicle: Vehicle
+    alternatives: list[Vehicle] = Field(default_factory=list)
+    complete: bool
+    """False означает частичное распознавание, а не подтверждение комплектации."""
+
+    confidence: VinConfidence = VinConfidence.PARTIAL
+    source: str = "nhtsa"
+    source_label: str = "Открытая база NHTSA"
+    warnings: list[str] = Field(default_factory=list)
+    missing_fields: list[str] = Field(default_factory=list)
+
+
 class Part(BaseModel):
     """Карточка товара в каталоге поставщика."""
 

@@ -31,6 +31,56 @@ export interface SupplierInfo {
   capabilities: SupplierCapabilities;
 }
 
+export type VinConfidence = "exact" | "likely" | "partial";
+
+export interface VehicleAttribute {
+  key: string;
+  label: string;
+  value: string;
+}
+
+export interface Vehicle {
+  vin: string;
+  make: string;
+  model: string | null;
+  model_year: number | null;
+  manufacturer: string | null;
+  series: string | null;
+  trim: string | null;
+  body_class: string | null;
+  vehicle_type: string | null;
+  doors: number | null;
+  drive_type: string | null;
+  transmission: string | null;
+  transmission_speeds: number | null;
+  engine_code: string | null;
+  engine_model: string | null;
+  engine_manufacturer: string | null;
+  engine_liters: number | null;
+  engine_cylinders: number | null;
+  engine_power_hp: number | null;
+  fuel_type: string | null;
+  electrification_level: string | null;
+  production_date: string | null;
+  market: string | null;
+  plant_city: string | null;
+  plant_country: string | null;
+  catalog_code: string | null;
+  vehicle_id: string | null;
+  attributes: VehicleAttribute[];
+}
+
+export interface VinDecodeResult {
+  vehicle: Vehicle;
+  alternatives: Vehicle[];
+  complete: boolean;
+  confidence: VinConfidence;
+  source: string;
+  source_label: string;
+  warnings: string[];
+  missing_fields: string[];
+}
+
 export interface SupplierIssue {
   supplier: string;
   supplier_name: string;

@@ -108,7 +108,7 @@ export function CommandPalette() {
           transition={{ duration: 0.14 }}
         >
           <div
-            className="absolute inset-0 bg-ink/35 backdrop-blur-[2px]"
+            className="absolute inset-0 bg-graphite/75 backdrop-blur-[2px]"
             onClick={hide}
             aria-hidden
           />

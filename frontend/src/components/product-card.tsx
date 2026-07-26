@@ -97,20 +97,21 @@ export function ProductCard({ group }: { group: OfferGroup }) {
   const scarce = best.quantity !== null && best.quantity <= 3 ? best.quantity : null;
 
   return (
-    <article className="border border-rule bg-surface/40 transition-colors hover:border-rule-strong">
-      <div className="flex flex-col gap-5 p-5 sm:flex-row sm:items-center sm:gap-7 sm:p-6">
+    <article className="hover-corner-frame border border-rule-strong bg-paper">
+      <div className="grid gap-5 p-4 sm:grid-cols-[6.5rem_minmax(0,1fr)_auto] sm:items-center sm:gap-6 sm:p-5">
         <Link
           href={`/part/${encodeURIComponent(group.part_id)}`}
-          className="grid h-24 w-24 shrink-0 place-items-center self-start border border-rule bg-paper sm:h-28 sm:w-28"
+          className="grid h-24 w-24 shrink-0 place-items-center border border-rule bg-media sm:h-[6.5rem] sm:w-[6.5rem]"
         >
-          <PartArt name={group.part_name} className="h-16 w-16 sm:h-20 sm:w-20" />
+          <PartArt name={group.part_name} className="h-16 w-16" />
         </Link>
 
         <div className="min-w-0 flex-1">
-          <p className="text-[0.6875rem] font-bold tracking-[0.18em] text-accent uppercase">
-            {group.brand}
-          </p>
-          <h3 className="mt-1 text-xl leading-tight font-semibold tracking-tight sm:text-2xl">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+            <p className="text-xs font-bold tracking-[0.12em] text-accent uppercase">{group.brand}</p>
+            <p className="num text-xs text-faint">арт. {group.part_code}</p>
+          </div>
+          <h3 className="mt-1.5 text-lg leading-tight font-semibold tracking-tight sm:text-xl">
             <Link
               href={`/part/${encodeURIComponent(group.part_id)}`}
               className="transition-colors hover:text-accent"
@@ -118,7 +119,6 @@ export function ProductCard({ group }: { group: OfferGroup }) {
               {group.part_name}
             </Link>
           </h3>
-          <p className="num mt-1.5 text-sm text-faint">Артикул {group.part_code}</p>
 
           <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2">
             <DeliveryBadge offer={best} />
@@ -131,10 +131,10 @@ export function ProductCard({ group }: { group: OfferGroup }) {
           </div>
         </div>
 
-        <div className="flex shrink-0 flex-col items-stretch gap-3 sm:items-end">
-          <div className="flex items-baseline gap-2 sm:flex-col sm:items-end sm:gap-0">
+        <div className="flex shrink-0 flex-col items-stretch gap-3 border-t border-rule pt-4 sm:min-w-44 sm:items-end sm:border-t-0 sm:border-l sm:py-2 sm:pl-6">
+          <div className="flex items-baseline justify-between gap-2 sm:flex-col sm:items-end sm:gap-1">
             <Price value={best.price} currency={best.currency} size="lg" />
-            <span className="text-xs text-faint">{best.warehouse_name}</span>
+            <span className="text-xs text-faint">склад: {best.warehouse_name}</span>
           </div>
           <AddButton offer={best} />
         </div>
@@ -146,7 +146,7 @@ export function ProductCard({ group }: { group: OfferGroup }) {
             type="button"
             onClick={() => setOpen((current) => !current)}
             aria-expanded={open}
-            className="flex w-full items-center gap-2 px-5 py-3 text-left text-sm text-muted transition-colors hover:text-ink sm:px-6"
+            className="flex w-full items-center gap-2 bg-paper/50 px-5 py-3 text-left text-sm text-muted transition-colors hover:text-ink"
           >
             <span aria-hidden className={cn("text-faint transition-transform", open && "rotate-90")}>
               ▸

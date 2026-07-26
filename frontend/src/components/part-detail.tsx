@@ -28,7 +28,7 @@ export function PartDetail({ result }: { result: OffersResult }) {
   return (
     <div className="space-y-14">
       <div className="grid gap-8 md:grid-cols-[minmax(0,20rem)_minmax(0,1fr)] md:gap-12">
-        <div className="grid aspect-square place-items-center border border-rule bg-surface/40">
+        <div className="grid aspect-square place-items-center border border-rule bg-media">
           <PartArt name={part.name} className="h-40 w-40 sm:h-52 sm:w-52" />
         </div>
 

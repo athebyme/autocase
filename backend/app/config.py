@@ -55,6 +55,15 @@ class Settings(BaseSettings):
     search_cache_ttl: float = 60.0
     search_cache_size: int = 512
 
+    # --- Распознавание автомобиля по VIN -----------------------------------
+    vin_decoder_base_url: str = "https://vpic.nhtsa.dot.gov/api"
+    vin_decoder_timeout: float = 10.0
+    laximo_base_url: str = "https://ws.laximo.ru/restApi/v1"
+    laximo_login: str = ""
+    laximo_password: str = ""
+    laximo_locale: str = "ru_RU"
+    laximo_timeout: float = 15.0
+
     # --- HTTP ---------------------------------------------------------------
     # NoDecode обязателен: без него pydantic-settings пытается разобрать
     # переменную окружения как JSON и падает на обычном «https://site».

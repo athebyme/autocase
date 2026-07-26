@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 from app.domain.models import (
     Basket,
@@ -30,6 +30,22 @@ class ClearBasketRequest(BaseModel):
 class SubmitRequest(BaseModel):
     delivery_mode_id: int = 1
     supplier: str | None = None
+
+
+class VinDecodeRequest(BaseModel):
+    vin: str = Field(min_length=17, max_length=17)
+
+    @field_validator("vin", mode="before")
+    @classmethod
+    def normalize_vin(cls, value: object) -> object:
+        if not isinstance(value, str):
+            return value
+        normalized = "".join(value.upper().split())
+        if any(char in normalized for char in "IOQ"):
+            raise ValueError("VIN не содержит буквы I, O или Q")
+        if not normalized.isalnum():
+            raise ValueError("VIN состоит только из латинских букв и цифр")
+        return normalized
 
 
 class BasketMutation(BaseModel):

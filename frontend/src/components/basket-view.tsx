@@ -4,11 +4,18 @@ import Link from "next/link";
 
 import { PartArt } from "@/components/part-art";
 import { Button, Empty, Price, Spinner, cn } from "@/components/ui";
+import {
+  DELIVERY_METHODS,
+  saveAccountProfile,
+  useAccountProfile,
+} from "@/lib/account-store";
 import { formatDelivery, plural } from "@/lib/format";
 import { useBasket, useBasketActions } from "@/lib/hooks";
 import type { BasketLine } from "@/lib/types";
 
 export function BasketView() {
+  const profile = useAccountProfile();
+  const deliveryMethod = profile.delivery_method;
   const { data: basket, isLoading, isError, refetch } = useBasket();
   const { clear, submit } = useBasketActions();
 
@@ -60,6 +67,13 @@ export function BasketView() {
   }
 
   const lines = basket.groups.flatMap((group) => group.lines);
+  const supplierDeliveryModeId =
+    basket.groups
+      .flatMap((group) => Object.keys(group.delivery_modes))
+      .map(Number)
+      .find(Number.isFinite) ?? 1;
+  const selectedDelivery =
+    DELIVERY_METHODS.find((method) => method.id === deliveryMethod) ?? DELIVERY_METHODS[0];
 
   return (
     <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-start">
@@ -93,18 +107,68 @@ export function BasketView() {
           <Price value={basket.total} currency={basket.currency} size="lg" />
         </div>
 
+        <fieldset className="mt-5 border-t border-rule pt-5">
+          <legend className="text-xs font-bold tracking-[0.08em] uppercase">
+            Способ получения
+          </legend>
+          <div className="mt-3 space-y-2">
+            {DELIVERY_METHODS.map((method) => {
+              const selected = deliveryMethod === method.id;
+              return (
+                <label
+                  key={method.id}
+                  className={cn(
+                    "grid cursor-pointer grid-cols-[1rem_1fr] gap-3 border p-3 transition-colors",
+                    selected
+                      ? "border-accent bg-paper"
+                      : "border-rule bg-paper hover:border-rule-strong",
+                  )}
+                >
+                  <input
+                    type="radio"
+                    name="delivery-method"
+                    value={method.id}
+                    checked={selected}
+                    onChange={() => saveAccountProfile({ delivery_method: method.id })}
+                    className="sr-only"
+                  />
+                  <span
+                    aria-hidden
+                    className={cn(
+                      "mt-0.5 grid h-4 w-4 place-items-center border",
+                      selected ? "border-accent" : "border-rule-strong",
+                    )}
+                  >
+                    {selected ? <span className="h-2 w-2 bg-accent" /> : null}
+                  </span>
+                  <span>
+                    <span className="block text-sm font-bold">{method.title}</span>
+                    <span className="mt-1 block text-[0.6875rem] leading-relaxed text-muted">
+                      {method.description}
+                    </span>
+                  </span>
+                </label>
+              );
+            })}
+          </div>
+        </fieldset>
+
         <button
           type="button"
           disabled={submit.isPending}
-          onClick={() => submit.mutate({ deliveryModeId: 1 })}
+          onClick={() => submit.mutate({ deliveryModeId: supplierDeliveryModeId })}
           className="mt-5 flex w-full items-center justify-center gap-2 border border-accent bg-accent py-4 text-sm font-semibold text-accent-ink transition-all hover:brightness-95 active:translate-y-px disabled:opacity-60"
         >
           {submit.isPending ? <Spinner /> : null}
-          Оформить заказ
+          Оформить · {selectedDelivery.title}
         </button>
 
         <p className="mt-3 text-xs leading-relaxed text-faint">
-          После оформления заказ появится в разделе «Заказы» — там же виден статус.
+          {deliveryMethod === "pickup"
+            ? "После оформления заказ появится в разделе «Заказы» — там же виден статус."
+            : profile.delivery_address
+              ? `Адрес: ${profile.delivery_address}. Менеджер подтвердит стоимость доставки.`
+              : "После оформления менеджер подтвердит адрес и стоимость доставки."}
         </p>
       </aside>
     </div>
@@ -121,7 +185,7 @@ function BasketRow({ line }: { line: BasketLine }) {
     <article className="flex gap-4 border border-rule bg-surface/40 p-4 sm:gap-5 sm:p-5">
       <Link
         href={`/part/${encodeURIComponent(line.part_id)}`}
-        className="grid h-20 w-20 shrink-0 place-items-center border border-rule bg-paper sm:h-24 sm:w-24"
+        className="grid h-20 w-20 shrink-0 place-items-center border border-rule bg-media sm:h-24 sm:w-24"
       >
         <PartArt name={line.part_name} className="h-12 w-12 sm:h-14 sm:w-14" />
       </Link>

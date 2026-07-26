@@ -40,41 +40,42 @@ export function SearchField({
       <form onSubmit={submit} className="group relative">
         <div
           className={cn(
-            "flex items-stretch border bg-surface transition-colors",
+            "flex items-stretch border-2 bg-paper transition-colors",
             "border-ink focus-within:border-accent",
           )}
         >
           <span
             aria-hidden
             className={cn(
-              "num grid shrink-0 place-items-center border-r border-rule text-accent",
-              hero ? "w-12 text-sm sm:w-14" : "w-10 text-xs",
+              "grid shrink-0 place-items-center border-r border-rule bg-paper text-muted",
+              hero ? "w-12 sm:w-14" : "w-10",
             )}
           >
-            №
+            <SearchGlyph />
           </span>
           <input
             ref={input}
             value={value}
             autoFocus={autoFocus}
             onChange={(event) => setValue(event.target.value)}
-            placeholder="PH5883"
+            placeholder="Артикул или OEM-номер"
             aria-label="Артикул или OEM-номер"
             spellCheck={false}
             autoComplete="off"
             className={cn(
-              "num min-w-0 flex-1 bg-transparent px-4 tracking-[0.06em] uppercase outline-none placeholder:text-faint",
-              hero ? "h-16 text-xl sm:h-20 sm:text-3xl" : "h-11 text-base",
+              "num w-0 min-w-0 flex-1 bg-transparent px-3 uppercase outline-none placeholder:font-sans placeholder:tracking-normal placeholder:text-faint placeholder:normal-case sm:px-4",
+              hero ? "h-16 text-lg sm:h-[4.5rem] sm:text-2xl" : "h-11 text-base",
             )}
           />
           <button
             type="submit"
             className={cn(
-              "shrink-0 border-l border-ink bg-ink font-semibold tracking-[0.16em] text-paper uppercase transition-colors hover:bg-accent hover:border-accent hover:text-accent-ink",
-              hero ? "px-5 text-xs sm:px-9 sm:text-sm" : "px-4 text-[0.6875rem]",
+              "shrink-0 border-l border-ink bg-accent font-semibold text-accent-ink transition-colors hover:bg-ink hover:text-paper",
+              hero ? "px-4 text-sm sm:px-9" : "px-4 text-xs",
             )}
           >
-            Найти
+            <span className="sm:hidden">Найти</span>
+            <span className="hidden sm:inline">Найти запчасть</span>
           </button>
         </div>
       </form>
@@ -100,5 +101,14 @@ export function SearchField({
         </div>
       ) : null}
     </div>
+  );
+}
+
+function SearchGlyph() {
+  return (
+    <svg viewBox="0 0 20 20" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={1.8}>
+      <circle cx="8.5" cy="8.5" r="5.5" />
+      <path d="m12.5 12.5 4 4" strokeLinecap="square" />
+    </svg>
   );
 }

@@ -17,7 +17,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from app.api.routes import basket, catalog, debug, orders, system
+from app.api.routes import basket, catalog, debug, orders, system, vehicles
 from app.config import get_settings
 from app.core.cache import TTLCache
 from app.core.errors import GatewayError
@@ -25,6 +25,7 @@ from app.core.logging import configure_logging
 from app.services.basket import BasketService
 from app.services.catalog import CatalogService
 from app.services.orders import OrdersService
+from app.services.vehicles import LaximoVinProvider, NhtsaVinProvider, VehicleLookupService
 from app.suppliers.registry import SupplierRegistry
 
 logger = logging.getLogger(__name__)
@@ -45,6 +46,24 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     app.state.catalog = CatalogService(registry, cache, timeout=timeout)
     app.state.basket = BasketService(registry, timeout=timeout)
     app.state.orders = OrdersService(registry, timeout=timeout)
+    vin_providers = []
+    if settings.laximo_login and settings.laximo_password:
+        vin_providers.append(
+            LaximoVinProvider(
+                base_url=settings.laximo_base_url,
+                login=settings.laximo_login,
+                password=settings.laximo_password,
+                locale=settings.laximo_locale,
+                timeout=settings.laximo_timeout,
+            )
+        )
+    vin_providers.append(
+        NhtsaVinProvider(
+            base_url=settings.vin_decoder_base_url,
+            timeout=settings.vin_decoder_timeout,
+        )
+    )
+    app.state.vehicle_lookup = VehicleLookupService(providers=vin_providers)
 
     logger.info(
         "Шлюз запущен",
@@ -56,6 +75,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     try:
         yield
     finally:
+        await app.state.vehicle_lookup.aclose()
         await registry.aclose()
 
 
@@ -118,7 +138,14 @@ def create_app() -> FastAPI:
             },
         )
 
-    for router in (system.router, catalog.router, basket.router, orders.router, debug.router):
+    for router in (
+        system.router,
+        catalog.router,
+        vehicles.router,
+        basket.router,
+        orders.router,
+        debug.router,
+    ):
         app.include_router(router, prefix="/api")
 
     return app

@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Golos_Text, JetBrains_Mono } from "next/font/google";
+import { Montserrat, Unbounded } from "next/font/google";
 
 import { CommandPalette } from "@/components/command-palette";
 import { Providers } from "@/components/providers";
@@ -8,33 +8,33 @@ import { SiteHeader } from "@/components/site-header";
 
 import "./globals.css";
 
-const golos = Golos_Text({
+const montserrat = Montserrat({
   subsets: ["latin", "cyrillic"],
-  weight: ["400", "500", "600", "700", "800", "900"],
-  variable: "--font-golos",
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-montserrat",
   display: "swap",
 });
 
-const jetbrains = JetBrains_Mono({
+const unbounded = Unbounded({
   subsets: ["latin", "cyrillic"],
-  weight: ["400", "500", "700"],
-  variable: "--font-jetbrains",
+  weight: ["600", "700", "800", "900"],
+  variable: "--font-unbounded",
   display: "swap",
 });
 
 export const metadata: Metadata = {
   title: {
-    default: "Автоконтинент — подбор автозапчастей по артикулу",
-    template: "%s · Автоконтинент",
+    default: "Автокейс Запчасти — интернет-магазин автозапчастей",
+    template: "%s · Автокейс Запчасти",
   },
   description:
-    "Наличие, цены и сроки поставки автозапчастей по артикулу и OEM-номеру. Проценка по складам, аналоги, оформление заказа.",
+    "Автозапчасти в наличии и под заказ. Поиск по артикулу и OEM-номеру, актуальные цены, сроки поставки и оформление заказа онлайн.",
 };
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f2efe9" },
-    { media: "(prefers-color-scheme: dark)", color: "#121110" },
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#191919" },
   ],
 };
 
@@ -43,8 +43,7 @@ const themeBootstrap = `
 (function () {
   try {
     var saved = localStorage.getItem("autocase-theme");
-    var system = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-    document.documentElement.setAttribute("data-theme", saved || system);
+    document.documentElement.setAttribute("data-theme", saved || "light");
   } catch (e) {
     document.documentElement.setAttribute("data-theme", "light");
   }
@@ -53,7 +52,11 @@ const themeBootstrap = `
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ru" suppressHydrationWarning className={`${golos.variable} ${jetbrains.variable}`}>
+    <html
+      lang="ru"
+      suppressHydrationWarning
+      className={`${montserrat.variable} ${unbounded.variable}`}
+    >
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeBootstrap }} />
       </head>

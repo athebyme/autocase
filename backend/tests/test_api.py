@@ -4,6 +4,22 @@ from __future__ import annotations
 
 from fastapi.testclient import TestClient
 
+from app.domain.models import Vehicle, VinDecodeResult
+
+
+class StubVehicleLookup:
+    async def decode(self, vin: str) -> VinDecodeResult:
+        return VinDecodeResult(
+            vehicle=Vehicle(
+                vin=vin,
+                make="VOLKSWAGEN",
+                model="GOLF",
+                model_year=2015,
+                body_class="Hatchback",
+            ),
+            complete=True,
+        )
+
 
 def test_health_reports_fixture_mode(client: TestClient) -> None:
     body = client.get("/api/health").json()
@@ -45,6 +61,26 @@ def test_search_of_nonsense_returns_empty_not_error(client: TestClient) -> None:
 
 def test_empty_query_is_rejected_in_our_envelope(client: TestClient) -> None:
     response = client.get("/api/search", params={"q": ""})
+
+    assert response.status_code == 422
+    assert response.json()["error"]["kind"] == "validation"
+
+
+def test_vin_decode_returns_vehicle_without_putting_vin_in_url(client: TestClient) -> None:
+    original = client.app.state.vehicle_lookup
+    client.app.state.vehicle_lookup = StubVehicleLookup()
+    try:
+        response = client.post("/api/vin/decode", json={"vin": "wvwzzz1jzxw000001"})
+    finally:
+        client.app.state.vehicle_lookup = original
+
+    assert response.status_code == 200
+    assert response.json()["vehicle"]["vin"] == "WVWZZZ1JZXW000001"
+    assert response.json()["vehicle"]["make"] == "VOLKSWAGEN"
+
+
+def test_invalid_vin_uses_shared_error_envelope(client: TestClient) -> None:
+    response = client.post("/api/vin/decode", json={"vin": "NOT-A-VIN"})
 
     assert response.status_code == 422
     assert response.json()["error"]["kind"] == "validation"

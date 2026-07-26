@@ -5,20 +5,23 @@
 @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 
 @theme {
-  /* Бумага, а не белый: тёплый фон технической документации. */
-  --color-paper: #f2efe9;
-  --color-surface: #fbf9f5;
-  --color-sunken: #e8e4da;
-  --color-ink: #17150f;
-  --color-muted: #6b6555;
-  --color-faint: #9a9384;
-  --color-rule: #dbd5c7;
-  --color-rule-strong: #bfb8a5;
+  /* Светлая палитра магазина: белый, холодные серые и почти чёрный. */
+  --color-paper: #ffffff;
+  --color-surface: #ffffff;
+  --color-sunken: #eeeeee;
+  --color-ink: #292929;
+  --color-graphite: #292929;
+  --color-graphite-ink: #ffffff;
+  --color-media: #ffffff;
+  --color-muted: #6b6b6b;
+  --color-faint: #949494;
+  --color-rule: #dededc;
+  --color-rule-strong: #bcbcb8;
 
-  /* Один сигнальный цвет на весь интерфейс — только для действия. */
-  --color-accent: #ff4a00;
+  /* Красный — только действие, выбранный пункт или важный сигнал. */
+  --color-accent: #d9261c;
   --color-accent-ink: #ffffff;
-  --color-accent-soft: #ffe7db;
+  --color-accent-soft: #fbe8e6;
 
   --color-positive: #1e6f4c;
   --color-positive-soft: #dff0e5;
@@ -27,8 +30,9 @@
   --color-critical: #c02617;
   --color-critical-soft: #fbe0dc;
 
-  --font-sans: var(--font-golos), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-jetbrains), ui-monospace, "SF Mono", monospace;
+  --font-sans: var(--font-montserrat), "Montserrat", ui-sans-serif, system-ui, sans-serif;
+  --font-logo: var(--font-unbounded), "Unbounded", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-unbounded), "Unbounded", ui-sans-serif, system-ui, sans-serif;
 
   /* Прямые углы — принципиальное решение, а не недосмотр. */
   --radius-none: 0px;
@@ -45,25 +49,27 @@
 }
 
 [data-theme="dark"] {
-  --color-paper: #121110;
-  --color-surface: #1a1916;
-  --color-sunken: #0c0b0a;
-  --color-ink: #f2eee4;
-  --color-muted: #948e7f;
-  --color-faint: #6a6558;
-  --color-rule: #2c2a25;
-  --color-rule-strong: #423f37;
+  --color-paper: #191919;
+  --color-surface: #222222;
+  --color-sunken: #111111;
+  --color-ink: #f0f0ed;
+  --color-graphite: #101010;
+  --color-graphite-ink: #f7f7f4;
+  --color-muted: #b0b0aa;
+  --color-faint: #898984;
+  --color-rule: #373734;
+  --color-rule-strong: #555550;
 
-  --color-accent: #ff5f21;
-  --color-accent-ink: #140b06;
-  --color-accent-soft: #33190d;
+  --color-accent: #ff493d;
+  --color-accent-ink: #ffffff;
+  --color-accent-soft: #3c1714;
 
-  --color-positive: #4fbe89;
-  --color-positive-soft: #12281d;
-  --color-warning: #e0a047;
-  --color-warning-soft: #2e2210;
-  --color-critical: #ff6d5c;
-  --color-critical-soft: #2f1410;
+  --color-positive: #69c99a;
+  --color-positive-soft: #142b20;
+  --color-warning: #efb25b;
+  --color-warning-soft: #302311;
+  --color-critical: #ff7869;
+  --color-critical-soft: #351715;
 }
 
 @keyframes rise {
@@ -107,6 +113,22 @@
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     font-feature-settings: "ss01";
+    background-image: linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent 95%,
+      color-mix(in srgb, var(--color-rule) 24%, transparent) 100%
+    );
+    background-size: 100% 36rem;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-logo);
   }
 
   /* Все числовые данные — моноширинные и с табличными цифрами, чтобы
@@ -141,6 +163,26 @@
 }
 
 @layer components {
+  /* Акцент карточки не меняет её размеры: толстые линии лежат поверх блока. */
+  .hover-corner-frame {
+    position: relative;
+  }
+
+  .hover-corner-frame::after {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    border-right: 4px solid transparent;
+    border-bottom: 4px solid transparent;
+    content: "";
+    pointer-events: none;
+    transition: border-color 150ms ease;
+  }
+
+  .hover-corner-frame:hover::after {
+    border-right-color: var(--color-accent);
+    border-bottom-color: var(--color-accent);
+  }
   /* Миллиметровка под всем макетом: едва читаемая сетка чертежа. */
   .grid-paper {
     background-image:

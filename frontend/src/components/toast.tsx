@@ -21,7 +21,7 @@ interface ToastApi {
 const ToastContext = createContext<ToastApi | null>(null);
 
 const TONE_BAR: Record<Tone, string> = {
-  neutral: "bg-ink",
+  neutral: "bg-graphite",
   positive: "bg-positive",
   critical: "bg-critical",
 };

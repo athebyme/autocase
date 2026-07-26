@@ -11,7 +11,14 @@ from app.suppliers.base import SupplierConfig
 @pytest.fixture
 def settings_env(monkeypatch: pytest.MonkeyPatch) -> None:
     """Изолируем тесты от локального .env и заставляем работать на фикстурах."""
-    for name in ("AK_LOGIN", "AK_PASSWORD", "SUPPLIERS", "SUPPLIERS_FILE"):
+    for name in (
+        "AK_LOGIN",
+        "AK_PASSWORD",
+        "LAXIMO_LOGIN",
+        "LAXIMO_PASSWORD",
+        "SUPPLIERS",
+        "SUPPLIERS_FILE",
+    ):
         monkeypatch.delenv(name, raising=False)
     monkeypatch.setenv("AK_USE_FIXTURES", "true")
     get_settings.cache_clear()

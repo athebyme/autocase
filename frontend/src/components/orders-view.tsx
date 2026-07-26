@@ -137,7 +137,7 @@ function OrderCard({ order }: { order: Order }) {
           >
             <Link
               href={`/part/${encodeURIComponent(line.part_id)}`}
-              className="grid h-14 w-14 shrink-0 place-items-center border border-rule bg-paper"
+              className="grid h-14 w-14 shrink-0 place-items-center border border-rule bg-media"
             >
               <PartArt name={line.part_name} className="h-9 w-9" tone="muted" />
             </Link>

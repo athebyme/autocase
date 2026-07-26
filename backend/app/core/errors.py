@@ -99,3 +99,19 @@ class BadIdentifier(GatewayError):
     status_code = 400
     kind = "bad_identifier"
     default_message = "Некорректный идентификатор"
+
+
+class VehicleNotFound(GatewayError):
+    """VIN корректен по формату, но декодер не смог определить автомобиль."""
+
+    status_code = 404
+    kind = "vin_not_found"
+    default_message = "Не удалось определить автомобиль по этому VIN"
+
+
+class VehicleLookupUnavailable(GatewayError):
+    """Независимый VIN-декодер не ответил или вернул нечитаемые данные."""
+
+    status_code = 503
+    kind = "vin_service_unavailable"
+    default_message = "Сервис распознавания VIN временно недоступен"
